@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Financial Management</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='pics/SSC4.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ssc_department_panel.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <!-- Left Image -->
+        <img src="{{ url_for('static', filename='pics/SSC4.ico') }}" alt="SSC" class="nav-img left-img">
+
+        <!-- Center Title -->
+        <div class="logo">Supreme Student Council Financial Management</div>
+
+        <!-- ⚙️ NEW NAV BAR -->
+        <div class="nav-links">
+            <a href="#" onclick="openSettings()" class="nav-link">
+                <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <button type="button" onclick="location.href='{{ url_for('index') }}'" class="nav-link">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+        </div>    
+    </nav>
+
+    <main class="container" aria-labelledby="login-heading">
+        <!-- Profile Hero -->
+        <section class="hero card" aria-hidden="false">
+            <div class="logo" aria-hidden="true">
+
+            </div>
+            <h1 id="profile-heading">User Profiles</h1>
+            <p>View basic information about users, including their names, roles, and contact details.</p>
+
+            <div style="height:18px"></div>
+            <div style="display:flex;gap:10px">
+
+            </div>
+        </section>
+
+        <!-- Officers Login Form -->
+        <aside class="card" aria-labelledby="form-title" role="region">
+            <h2 id="form-title" style="margin:0 0 8px 0;font-size:18px">Departmental Funds Login Panel</h2>
+
+            <form id="loginForm" novalidate>
+                <div class="field">
+                    <label for="email">Email or username</label>
+                    <input id="email" name="email" type="text" class="input" placeholder="Enter Username" autocomplete="username" required />
+                    <div class="small" style="margin-top:6px">We'll never share your login email.</div>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="pw-wrap">
+                        <input id="password" name="password" type="password" class="input" placeholder="• • • • • • • •" autocomplete="current-password"/>
+                        <button type="button" class="pw-toggle" aria-pressed="false" id="pwToggle" title="Show password">Show</button>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:6px;">
+                    <a class="forgot" href="#" onclick="alert('Forgot password flow')">Forgot password?</a>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn" id="submitBtn">Log In</button>
+                </div>
+
+                <!-- Flash messages -->
+                <div id="feedback" role="status" aria-live="polite" style="min-height:22px">
+                <!--{% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                            <span class="{{ category }}">{{ message }}</span>
+                        {% endfor %}
+                    {% endwith %} -->
+                </div>
+            </form>
+        </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2025 SSC Financial Management. All rights reserved. @Azarel55 @ClarkJay</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        const form = document.getElementById('loginForm');
+        const email = document.getElementById('email');
+        const pw = document.getElementById('password');
+        const feedback = document.getElementById('feedback');
+        const pwToggle = document.getElementById('pwToggle');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Toggle password visibility
+        pwToggle.addEventListener('click', () => {
+            const showing = pw.type === 'text';
+            pw.type = showing ? 'password' : 'text';
+            pwToggle.textContent = showing ? 'Show' : 'Hide';
+            pwToggle.setAttribute('aria-pressed', String(!showing));
+            pw.focus();
+        });
+
+        // Form submission validation (only checks if email is empty)
+        form.addEventListener('submit', (e) => {
+            feedback.textContent = '';
+            feedback.className = '';
+
+            const valEmail = email.value.trim();
+
+            if (!valEmail) {
+                showError('Please enter your email or username.');
+                email.focus();
+                e.preventDefault();
+                return;
+            }
+
+            // allow password of any length; backend will handle validation
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in…';
+        });
+
+        function showError(msg){
+            feedback.textContent = msg;
+            feedback.className = 'error';
+        }
+        function showSuccess(msg){
+            feedback.textContent = msg;
+            feedback.className = 'success';
+        }
+
+        function openAbout() {
+            alert("About modal placeholder");
+        }
+
+        // Modal open/close
+        function openAbout() {
+            document.getElementById('aboutModal').style.display = 'block';
+        }
+        function closeAbout() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('aboutModal')) {
+                closeAbout();
+            }
+        }
+
+        function openSettings() {
+            // You can replace this with your actual settings page later
+            alert("Opening settings...");
+        }
+
+        function goBack() {
+            window.history.back(); // goes back to the previous page
+        }
+
+        function openAbout() {
+            alert("About page info...");
+        }
+    </script>
+</body>
+</html>

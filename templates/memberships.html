@@ -1,0 +1,483 @@
+{% extends "dept.html" %}
+
+{% block title %}Membership & Transaction Management - SSC Financial Management{% endblock %}
+
+{% block content %}
+<section class="card" style="max-width:100%;margin:20px auto;">
+  <h1 style="text-align:center;"><i class="fa-solid fa-id-card"></i> SSC MEMBERSHIP & PAYMENT MANAGEMENT PANEL</h1>
+  <p style="text-align:center;">Manage student memberships and payment transactions efficiently.</p>
+
+  <form id="managementForm" autocomplete="off">
+    <div class="form-two-column">
+
+      <!-- LEFT COLUMN -->
+      <div class="left-section">
+        <h3><i class="fa-solid fa-user-graduate"></i> Student Information</h3>
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="description_fee">Description Fee</label>
+            <input class="input" id="description_fee" type="text" disabled/>
+          </div>
+
+          <div class="form-group">
+            <label for="serial">Serial Number</label>
+            <input class="input" id="serial" type="text" value="{{ next_serial_formatted }}" disabled />
+          </div>
+
+          <div class="form-group">
+            <label for="student_number">Student Number</label>
+            <input class="input no-spin" id="student_number" type="number" placeholder="Enter Student Number" required />
+          </div>
+
+          <div class="form-group">
+            <label for="surname">Surname</label>
+            <input class="input" id="surname" type="text" placeholder="Enter Surname" required />
+          </div>
+
+          <div class="form-group">
+            <label for="firstname">First Name</label>
+            <input class="input" id="firstname" type="text" placeholder="Enter First Name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="middlename">Middle Name</label>
+            <input class="input" id="middlename" type="text" placeholder="Enter Middle Name" />
+          </div>
+
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select class="input" id="department">
+              <option>COA</option>
+              <option>CTED</option>
+              <option>CITE</option>
+              <option>CNM</option>
+              <option>COC</option>
+              <option>CBA</option>
+              <option>CHM</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="course">Course</label>
+            <select class="input" id="course"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="level">Year Level</label>
+            <select class="input" id="level">
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+            </select>
+          </div>
+
+          <!-- OFFICER FIELD -->
+          <div class="form-group">
+            <label for="officer">Officer</label>
+            <select class="input" id="officer">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+
+          <!-- ORGANIZATION -->
+          <div class="form-group" id="organization-container">
+            <label for="organization">Organization</label>
+            <input class="input" id="organization" type="text" placeholder="Enter Organization" />
+          </div>
+
+          <!-- POSITION -->
+          <div class="form-group" id="position-container">
+            <label for="position">Position</label>
+            <input class="input" id="position" type="text" placeholder="Enter Position" />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-section">
+        <h3><i class="fa-solid fa-wallet"></i> Payment Setup</h3>
+
+        <div class="form-group">
+          <label for="action_type">Action Type</label>
+          <select class="input" id="action_type">
+            <option value="membership">Membership Registration</option>
+            <option value="payment">Payment</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="member_date">Date</label>
+          <input class="input" id="member_date" type="text" disabled />
+        </div><br>
+
+        <div class="form-group">
+          <label for="transaction_id">Select Transaction Fee</label>
+          <select class="input" id="transaction_id">
+            {% for transaction in transactions %}
+            <option 
+              value="{{ transaction.id }}" 
+              data-fee="{{ transaction.total_fee }}"
+              data-membership="{{ 'yes' if transaction.is_membership else 'no' }}"
+            >
+              {{ transaction.description }} - ₱{{ transaction.total_fee }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="member_type">Membership Type</label>
+          <select class="input" id="member_type">
+            <option value="Freshmen">Freshmen</option>
+            <option value="Old Student">Old Student</option>
+            <option value="Transferee">Transferee</option>
+          </select>
+        </div>
+
+        <!-- SCHOOL YEAR DROPDOWN -->
+        <div class="form-group">
+          <label for="school_year">School Year</label>
+          <select class="input" id="school_year"></select>
+        </div>
+
+        <!-- SEMESTER -->
+        <div class="form-group">
+          <label for="semester">Semester</label>
+          <select class="input" id="semester">
+            <option>1st Semester</option>
+            <option>2nd Semester</option>
+            <option>Summer</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-save" id="saveBtn">
+            <i class="fa-solid fa-floppy-disk"></i> SAVE
+          </button>
+          <button type="reset" class="btn-cancel"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+
+<script>
+/* ===== DOM ELEMENTS ===== */
+const deptDropdown = document.getElementById('department');
+const courseDropdown = document.getElementById('course');
+const levelDropdown = document.getElementById('level');
+const memberTypeDropdown = document.getElementById('member_type');
+const transactionDropdown = document.getElementById('transaction_id');
+const actionTypeDropdown = document.getElementById('action_type');
+const saveBtn = document.getElementById('saveBtn');
+const schoolYearInput = document.getElementById('school_year');
+const semesterDropdown = document.getElementById('semester');
+const officerDropdown = document.getElementById('officer');
+const organizationInput = document.getElementById('organization');
+const positionInput = document.getElementById('position');
+const organizationContainer = document.getElementById('organization-container');
+const positionContainer = document.getElementById('position-container');
+
+const departmentCourses = {
+  COA: ["BSA", "BSAIS"],
+  CTED: ["BEEd", "BSEd"],
+  CITE: ["BSIT", "BSCpE"],
+  CBA: ["BSBA-FM", "BSBA-MM"],
+  CNM: ["BSCrim"],
+  CHM: ["BSHM"],
+  COC: ["Other Course"]
+};
+
+let nextSerial = parseInt("{{ next_serial_formatted }}", 10) || 1;
+
+function formatSerial(num){ return num.toString().padStart(4,'0'); }
+
+/* ===== SCHOOL YEAR ===== */
+function updateSchoolYear() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    let startYear = currentMonth >= 6 ? currentYear : currentYear - 1;
+    schoolYearInput.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+        const syStart = startYear + i;
+        const syEnd = syStart + 1;
+        const opt = document.createElement('option');
+        opt.value = `${syStart}-${syEnd}`;
+        opt.textContent = `${syStart}-${syEnd}`;
+        schoolYearInput.appendChild(opt);
+        if (i === 0) opt.selected = true;
+    }
+}
+
+/* ===== COURSE & LEVEL ===== */
+function ensureNAOptionExists() {
+  if (!Array.from(levelDropdown.options).some(o => o.value === 'N/A')) {
+    const opt = document.createElement('option');
+    opt.value = 'N/A';
+    opt.textContent = 'N/A';
+    levelDropdown.appendChild(opt);
+  }
+}
+
+function updateCourseOptions(){
+  const list = departmentCourses[deptDropdown.value] || [];
+  courseDropdown.innerHTML = "";
+  list.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    courseDropdown.appendChild(opt);
+  });
+  if(!list.length) courseDropdown.innerHTML = '<option value="">N/A</option>';
+}
+
+function updateYearLevelOptions(){
+  Array.from(levelDropdown.options).forEach(o=>{
+    o.disabled = false; o.style.color = '';
+  });
+
+  if(actionTypeDropdown.value === "payment"){
+    ensureNAOptionExists();
+    Array.from(levelDropdown.options).forEach(o=>{
+      if(o.value !== 'N/A'){ o.disabled = true; o.style.color = 'gray'; }
+    });
+    levelDropdown.value = 'N/A'; return;
+  }
+
+  const memberType = memberTypeDropdown.value;
+  Array.from(levelDropdown.options).forEach(o=>{
+    if(o.value === 'N/A'){ o.disabled = true; o.style.color = 'gray'; }
+  });
+
+  if(memberType === "Freshmen"){
+    Array.from(levelDropdown.options).forEach(o=>{
+      if(!o.textContent.startsWith('1st')){ o.disabled = true; o.style.color = 'gray'; }
+    });
+    const first = Array.from(levelDropdown.options).find(o=>o.textContent.startsWith('1st'));
+    if(first) levelDropdown.value = first.value;
+  }
+  if(memberType === "Old Student"){
+    const first = Array.from(levelDropdown.options).find(o=>o.textContent.startsWith('1st'));
+    if(first){ first.disabled = true; first.style.color = 'gray';
+      if(levelDropdown.value === first.value){
+        const next = Array.from(levelDropdown.options).find(o=>!o.disabled);
+        if(next) levelDropdown.value = next.value;
+      }
+    }
+  }
+}
+
+/* ===== SERIAL & DESCRIPTION ===== */
+function updateSerialField(){
+  document.getElementById('serial').value =
+    actionTypeDropdown.value === 'payment' ? "N/A" : formatSerial(nextSerial);
+}
+
+function updateDescriptionFee(){
+  const opt = transactionDropdown.options[transactionDropdown.selectedIndex];
+  if(!opt){ document.getElementById('description_fee').value = ""; return; }
+  let desc = opt.textContent.includes("- ₱")
+    ? opt.textContent.split("- ₱")[0].trim()
+    : opt.textContent;
+  document.getElementById('description_fee').value = desc;
+}
+
+/* ===== TRANSACTION FILTERING ===== */
+function isMembershipOption(opt){
+  return opt.dataset.membership === "yes" || /membership/i.test(opt.textContent);
+}
+
+function handleTransactionSelection(){
+  const isPayment = actionTypeDropdown.value === 'payment';
+  let firstVisible = null;
+
+  Array.from(transactionDropdown.options).forEach(opt => {
+    const isMembership = isMembershipOption(opt);
+
+    if(isPayment){
+      // PAYMENT: disable membership options
+      opt.disabled = isMembership;
+      opt.style.color = isMembership ? "gray" : "";
+      if(!isMembership && !firstVisible) firstVisible = opt;
+    } else {
+      // MEMBERSHIP: disable non-membership options
+      opt.disabled = !isMembership;
+      opt.style.color = !isMembership ? "gray" : "";
+      if(isMembership && !firstVisible) firstVisible = opt;
+    }
+  });
+
+  if(firstVisible) transactionDropdown.value = firstVisible.value;
+  updateDescriptionFee();
+  updateSerialField();
+}
+
+/* ===== OFFICER VISIBILITY ===== */
+function updateOfficerFields(){
+  if(officerDropdown.value === "Yes"){
+    organizationContainer.style.display = "block";
+    positionContainer.style.display = "block";
+  } else {
+    organizationContainer.style.display = "none";
+    positionContainer.style.display = "none";
+    organizationInput.value = '';
+    positionInput.value = '';
+  }
+}
+
+/* ===== SAVE FUNCTION ===== */
+async function saveAll() {
+    const sn = document.getElementById('student_number').value.trim();
+    if(!sn){ alert("Enter student number."); return; }
+
+    const transactionOption = transactionDropdown.options[transactionDropdown.selectedIndex];
+    if(!transactionOption){ alert("Select a transaction."); return; }
+
+    const serialVal = actionTypeDropdown.value === "payment" ? null : nextSerial;
+
+    const student = {
+        serial_number: serialVal,
+        date: document.getElementById('member_date').value,
+        student_number: sn,
+        surname: document.getElementById('surname').value.trim(),
+        firstname: document.getElementById('firstname').value.trim(),
+        middlename: document.getElementById('middlename').value.trim(),
+        transferee: memberTypeDropdown.value === 'Transferee' ? 'Yes' : 'No',
+        department: deptDropdown.value,
+        course: courseDropdown.value,
+        level: actionTypeDropdown.value === 'payment' ? 'N/A' : levelDropdown.value,
+        member_type: memberTypeDropdown.value,
+        transaction_id: transactionDropdown.value,
+        description_fee: document.getElementById('description_fee').value,
+        action_type: actionTypeDropdown.value,
+        school_year: schoolYearInput.value,
+        semester: semesterDropdown.value,
+        officer: officerDropdown.value,
+        organization: organizationInput.value.trim(),
+        position: positionInput.value.trim()
+    };
+
+    try {
+        const url = student.action_type === 'membership'
+            ? "{{ url_for('membership_page') }}"
+            : "{{ url_for('payment_page_post') }}";
+
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({students: [student]})
+        });
+
+        const result = await res.json();
+
+        if(!result.success){
+            alert(result.message || "Error saving.");
+            return;
+        }
+
+        alert("Saved successfully!");
+        ['student_number','surname','firstname','middlename'].forEach(id=>document.getElementById(id).value='');
+        officerDropdown.value = 'No';
+        updateOfficerFields();
+
+        if(student.action_type === "membership") nextSerial++;
+        updateSerialField();
+        updateSchoolYear();
+
+    } catch(err){
+        alert("Error: " + err.message);
+    }
+}
+
+/* ===== FETCH STUDENT ===== */
+async function fetchStudentData(){
+  const sn = document.getElementById('student_number').value.trim();
+  if(!sn) return;
+
+  try {
+    const res = await fetch(`/api/get_student/${sn}`);
+    const data = await res.json();
+
+    if(data.success && data.student){
+      const s = data.student;
+      document.getElementById('surname').value = s.surname || '';
+      document.getElementById('firstname').value = s.first_name || '';
+      document.getElementById('middlename').value = s.middle_name || '';
+      deptDropdown.value = s.department || "";
+      updateCourseOptions();
+      courseDropdown.value = s.course || '';
+      memberTypeDropdown.value = s.member_type || 'Freshmen';
+      levelDropdown.value = s.level || s.year_level || '1st Year';
+      officerDropdown.value = s.officer || 'No';
+      organizationInput.value = s.organization || '';
+      positionInput.value = s.position || '';
+
+      actionTypeDropdown.value =
+        (s.serial_number && s.serial_number !== 'N/A') ? 'payment' : 'membership';
+    } else {
+      ['surname','firstname','middlename'].forEach(id=>document.getElementById(id).value = '');
+      courseDropdown.innerHTML = '';
+      memberTypeDropdown.value = 'Freshmen';
+      officerDropdown.value = 'No';
+      organizationInput.value = '';
+      positionInput.value = '';
+      actionTypeDropdown.value = 'membership';
+    }
+
+    updateYearLevelOptions();
+    handleTransactionSelection();
+    updateSerialField();
+    updateSchoolYear();
+    updateDescriptionFee();
+    updateOfficerFields();
+
+  } catch(err){
+    console.error(err);
+  }
+}
+
+/* ===== LIVE DATE ===== */
+function updateDateTime(){
+  document.getElementById('member_date').value =
+    new Date().toLocaleString('en-US',{
+      year:'numeric', month:'long', day:'numeric',
+      hour:'2-digit', minute:'2-digit', second:'2-digit'
+    });
+}
+updateDateTime();
+setInterval(updateDateTime,1000);
+
+/* ===== INIT ===== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  updateCourseOptions();
+  updateYearLevelOptions();
+  handleTransactionSelection();
+  updateSerialField();
+  updateSchoolYear();
+  updateDescriptionFee();
+  updateOfficerFields();
+});
+
+/* ===== EVENTS ===== */
+deptDropdown.addEventListener('change', updateCourseOptions);
+memberTypeDropdown.addEventListener('change', updateYearLevelOptions);
+actionTypeDropdown.addEventListener('change', ()=>{
+  handleTransactionSelection();
+  updateYearLevelOptions();
+});
+transactionDropdown.addEventListener('change', updateDescriptionFee);
+saveBtn.addEventListener('click', saveAll);
+officerDropdown.addEventListener('change', updateOfficerFields);
+
+const studentNumberEl = document.getElementById('student_number');
+studentNumberEl.addEventListener('blur', fetchStudentData);
+studentNumberEl.addEventListener('keypress', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); fetchStudentData(); }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,109 @@
+on_http_request:
+  - name: SSC_Financial_Monitoring
+    actions:
+      - type: forward-internal
+        config:
+          url: https://ssc_financial_management
+          on_error: continue
+      - type: custom-response
+        config:
+          status_code: 200
+          headers:
+            content-type: text/html
+          body: |
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} SSC FINANCIAL MONITORING {% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='pics/SSC4.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- ======= NAVBAR ======= -->
+    <header class="navbar">
+        <!-- Left Section -->
+        <div class="nav-left">
+            <img src="{{ url_for('static', filename='pics/SSC4.ico') }}" alt="SSC" class="nav-img">
+        </div>
+
+        <!-- Center: Title -->
+        <div class="nav-center">
+            <h1 class="logo">SUPREME STUDENT COUNCIL FINANCIAL MONITORING</h1>
+        </div>
+
+        <!-- Right Section -->
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-solid fa-envelope"></i> Gmail
+                </a>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-facebook"></i> Facebook
+                </a>
+                <a href="#" onclick="openAbout()">
+                    <i class="fa-solid fa-info-circle"></i> About
+                </a>
+            </div>
+        </div>
+
+        <!-- Rightmost Logo -->
+        <div class="nav-logo-right">
+            <img src="{{ url_for('static', filename='pics/Olpc.png') }}" alt="OLPCC" class="nav-img">
+        </div>
+    </header>
+
+    <!-- ======= MAIN CONTENT ======= -->
+    <main class="container" aria-labelledby="login-heading">
+
+        <!-- Officer Panel -->
+        <aside class="card magenta-panel" role="region" aria-labelledby="officers-title">
+            <h2 id="officers-title" style="margin:0 0 8px 0;font-size:18px">Supreme Student Council Officer's Panel</h2>
+            <form action="{{ url_for('ssc_login_panel') }}" method="post" novalidate>
+                <span class="row" style="margin-top:40px;">
+                    
+                </span>
+                <div class="row" style="margin-top:150px;">
+                    <button type="submit" class="btn">Enter</button>
+                </div>
+            </form>
+        </aside>
+
+        <!-- Adviser/President Panel -->
+        <aside class="card green-panel" role="region" aria-labelledby="adviser-title">
+            <h2 id="adviser-title" style="margin:0 0 8px 0;font-size:18px">SSC Financial Viewing Panel</h2>
+            <form action="{{ url_for('ssc_viewing_panel') }}" method="post" novalidate>
+                <span class="row" style="margin-top:40px;">
+                    
+                </span>
+                <div class="row" style="margin-top:150px;">
+                    <button type="submit" class="btn">Enter</button>
+                </div>
+            </form>
+        </aside>
+    </main>
+
+    <!-- Footer -->
+        {% include "footer.html"%}
+    <!-- End Footer -->
+
+    <!-- ======= SCRIPTS ======= -->
+    <script>
+        function openAbout() {
+            document.getElementById('aboutModal')?.style.display = 'block';
+        }
+        function closeAbout() {
+            document.getElementById('aboutModal')?.style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('aboutModal')) {
+                closeAbout();
+            }
+        }
+    </script>
+</body>
+</html>

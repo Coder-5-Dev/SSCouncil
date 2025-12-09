@@ -1,0 +1,22 @@
+<aside id="sidebar">
+    <div class="sidebar-title">
+        <div class="sidebar-brand">
+            <span class="material-icons-outlined">school</span> FINANCIAL MANAGEMENT
+        </div>
+        <span class="material-icons-outlined" onclick="closeSidebar()"></span>
+    </div>
+
+    <ul class="sidebar-list">
+        <li class="sidebar-list-item">
+            <button type="button" onclick="location.href='{{ url_for('breakdown_notes') }}'">
+                <span class="material-icons-outlined">format_list_bulleted</span>BREAKDOWN NOTES
+            </button>
+        </li>
+        
+        <li class="sidebar-list-item">
+            <button type="button" onclick="location.href='{{ url_for('auditor_notes') }}'">
+                <span class="material-icons-outlined">logout</span>BACK TO MENU
+            </button>
+        </li>
+    </ul>
+</aside>

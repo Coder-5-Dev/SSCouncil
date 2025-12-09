@@ -1,0 +1,277 @@
+:root {
+  --bg: #0f1724;
+  --card: #0b1220;
+  --accent: #5eead4;
+  --muted: #9aa4b2;
+  --success: #16a34a;
+  --danger: #ef4444;
+  --border: rgba(255, 255, 255, 0.06);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ---------- RESET ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg);
+  color: #e2e8f0;
+  overflow-y: auto; /* allow vertical scrolling */
+  overflow-x: hidden;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  padding: 20px;
+}
+
+/* ---------- LEFT PANEL ---------- */
+.hero {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent);
+  box-shadow: 0 6px 20px rgba(29, 37, 75, 0.6);
+  border-radius: 14px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-y: auto; /* scrollable if content is tall */
+  max-height: 90vh; /* optional max height */
+  animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+/* ---------- RIGHT PANEL ---------- */
+.form-box {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(2,6,23,0.6);
+  padding: 28px;
+  overflow-y: auto; /* scrollable */
+  max-height: 90vh; /* optional max height */
+  animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+/* ---------- FORM ELEMENTS ---------- */
+label {
+  display: block;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-bottom: 5px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: #f1f5f9;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(94,234,212,0.3);
+  outline: none;
+}
+
+/* Hide number spinners */
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn, .btn-small {
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  color: #032025;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease-in-out;
+}
+
+.btn:hover, .btn-small:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-save {
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  color: #fff;
+}
+
+.btn-cancel {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  color: #fff;
+}
+
+/* ---------- TABLE SECTION ---------- */
+.table-container {
+  margin-top: 25px;
+  overflow-x: auto;
+  overflow-y: auto; /* make table scrollable vertically */
+  max-height: 400px; /* adjust height for scrolling */
+  background-color: rgba(17,24,39,0.8);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #f8fafc;
+}
+
+.user-table th, .user-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+}
+
+.user-table th {
+  background: rgba(94,234,212,0.08);
+  color: var(--accent);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(4px);
+}
+
+.user-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.02);
+}
+
+.user-table tr:hover {
+  background: rgba(94,234,212,0.12);
+  transition: 0.2s;
+}
+
+/* ---------- FOOTER ---------- */
+.footer {
+  background-color: var(--bg);
+  color: var(--muted);
+  padding: 10px 20px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.25);
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------- Extra Small Devices (up to 480px) -------------------- */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+    gap: 16px;
+  }
+
+  .hero, .form-box {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .user-table th, .user-table td {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .btn, .btn-small, .btn-save, .btn-cancel {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  .table-container {
+    max-height: 300px;
+  }
+}
+
+/* -------------------- Landscape Phones / Small Tablets (481px - 767px) -------------------- */
+@media (min-width: 481px) and (max-width: 767px) {
+  .container {
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .hero, .form-box {
+    padding: 24px;
+  }
+
+  .user-table th, .user-table td {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .table-container {
+    max-height: 350px;
+  }
+}
+
+/* -------------------- Medium Devices / Tablets (768px - 991px) -------------------- */
+@media (min-width: 768px) and (max-width: 991px) {
+  .hero, .form-box {
+    max-height: 80vh; /* keep scrollable if content grows */
+  }
+
+  .table-container {
+    max-height: 380px;
+  }
+}
+
+/* -------------------- Large Devices / Laptops (992px - 1199px) -------------------- */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    gap: 24px;
+    padding: 20px 25px;
+  }
+
+  .table-container {
+    max-height: 400px;
+  }
+}
+
+/* -------------------- Extra Large Devices / Desktops (1200px+) -------------------- */
+@media (min-width: 1200px) {
+  .container {
+    gap: 28px;
+    padding: 25px 40px;
+  }
+
+  .hero, .form-box {
+    max-height: 90vh;
+  }
+
+  .table-container {
+    max-height: 450px;
+  }
+}

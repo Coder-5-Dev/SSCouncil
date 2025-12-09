@@ -1,0 +1,261 @@
+{% extends "ch_contents.html" %}
+
+{% block title %}Cash Inflows - SSC Financial Management{% endblock %}
+
+{% block content %}
+<!-- 🔹 Report Summary Boxes -->
+<div class="finance-dashboard">
+  <div class="report-box gradient-blue">
+    <i class="fa-solid fa-calendar-day icon"></i>
+    <h3>Current Day</h3>
+    <p class="report-date" id="today-date">--</p>
+    <h2>₱{{ today_total or "0.00" }}</h2>
+  </div>
+
+  <div class="report-box gradient-green">
+    <i class="fa-solid fa-calendar-week icon"></i>
+    <h3>This Week</h3>
+    <p class="report-date" id="week-range">--</p>
+    <h2>₱{{ week_total or "0.00" }}</h2>
+  </div>
+
+  <div class="report-box gradient-purple">
+    <i class="fa-solid fa-calendar-days icon"></i>
+    <h3>This Month</h3>
+    <p class="report-date" id="month-name">--</p>
+    <h2>₱{{ month_total or "0.00" }}</h2>
+  </div>
+
+  <div class="report-box gradient-orange">
+    <i class="fa-solid fa-arrow-trend-up icon"></i>
+    <h3>Total Transactions</h3>
+    <p class="report-date">Overall</p>
+    <h2>₱{{ total_all or "0.00" }}</h2>
+  </div>
+</div>
+
+<!-- 🔹 Filter Section (FIXED + UNIQUE FEES AUTO-GENERATED) -->
+<div class="filter-section">
+  <div class="left">
+    <label for="descFilter">Filter by Fee:</label>
+
+    <select id="descFilter" onchange="filterByDescription()">
+        <option value="">All Fees</option>
+
+        {% for fee in fee_descriptions %}
+            <option value="{{ fee }}">{{ fee }}</option>
+        {% endfor %}
+    </select>
+
+    <button class="export-btn" onclick="exportFilteredExcel()">Export to Excel</button>
+  </div>
+</div>
+
+<!-- 🔹 Report Table -->
+<div class="report-section">
+  <div class="report-header">
+    <div class="header-left">
+      <div>
+        <h3>SSC Financial Cash Inflows</h3>
+        <p>Transaction Report — <span id="generated-date"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <table class="report-table" id="transactionTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Student Number</th>
+        <th>Student Name</th>
+        <th>Department</th>
+        <th>Course</th>
+        <th>Description</th>
+        <th>Amount (₱)</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for trans in transactions %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ trans.date }}</td>
+        <td>{{ trans.student_number }}</td>
+        <td>{{ trans.surname }}, {{ trans.first_name }} {{ trans.middle_name }}</td>
+        <td>{{ trans.department }}</td>
+        <td>{{ trans.course }}</td>
+
+        <!-- ✅ IMPORTANT: Added data-desc for filtering -->
+        <td data-desc="{{ trans.description }}">{{ trans.description }}</td>
+
+        <td>{{ "%.2f"|format(trans.payment) }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="no-data">No transactions available</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   ✅ FILTER BY DESCRIPTION (Fee)
+--------------------------------------------------------- */
+function filterByDescription() {
+    const filterValue = document.getElementById("descFilter").value.toLowerCase();
+    const rows = document.querySelectorAll("#transactionTable tbody tr");
+
+    rows.forEach(row => {
+        const descCell = row.querySelector("td[data-desc]");
+        if (!descCell) return;
+
+        const descText = descCell.textContent.toLowerCase();
+
+        row.style.display =
+            filterValue === "" || descText.includes(filterValue)
+            ? ""
+            : "none";
+    });
+}
+
+/* ---------------------------------------------------------
+   ✅ SEARCH BAR LIVE FILTER
+--------------------------------------------------------- */
+document.getElementById("searchInput")?.addEventListener("keyup", function () {
+    const query = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#transactionTable tbody tr");
+
+    rows.forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(query) ? "" : "none";
+    });
+});
+
+/* ---------------------------------------------------------
+   ✅ EXPORT FILTERED TABLE → STYLED EXCEL (XLSX.js)
+   ✅ MATCH HTML TABLE LOOK
+   ✅ FILENAME MATCHES DESCRIPTION FILTER
+--------------------------------------------------------- */
+function exportFilteredExcel() {
+    const table = document.getElementById("transactionTable");
+    const rows = table.querySelectorAll("tbody tr");
+
+    // ✅ Clone filtered table for export
+    let exportTable = document.createElement("table");
+    let thead = table.querySelector("thead").cloneNode(true);
+    exportTable.appendChild(thead);
+
+    let tbody = document.createElement("tbody");
+
+    rows.forEach(row => {
+        if (row.style.display !== "none") {
+            tbody.appendChild(row.cloneNode(true));
+        }
+    });
+
+    exportTable.appendChild(tbody);
+
+    // ✅ Convert to worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.table_to_sheet(exportTable, { raw: true });
+
+    // ✅ Apply Excel Styling
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+            const cell = worksheet[cellAddress];
+            if (!cell) continue;
+
+            // ✅ Default cell styling
+            cell.s = {
+                font: { name: "Arial", sz: 11 },
+                alignment: { vertical: "center", horizontal: "center", wrapText: true },
+                border: {
+                    top: { style: "thin", color: { rgb: "444444" } },
+                    bottom: { style: "thin", color: { rgb: "444444" } },
+                    left: { style: "thin", color: { rgb: "444444" } },
+                    right: { style: "thin", color: { rgb: "444444" } }
+                }
+            };
+
+            // ✅ Header Style (Matches your page)
+            if (R === 0) {
+                cell.s.fill = { fgColor: { rgb: "0F172A" } }; // Dark header (#0f172a)
+                cell.s.font = { bold: true, color: { rgb: "FFFFFF" }, name: "Arial", sz: 12 };
+            }
+        }
+    }
+
+    // ✅ Match Column Widths with HTML table
+    const htmlCols = table.querySelectorAll("thead th");
+    worksheet["!cols"] = [];
+
+    htmlCols.forEach(th => {
+        let widthPx = th.offsetWidth;
+        let widthXls = Math.floor(widthPx / 7);
+        worksheet["!cols"].push({ wch: widthXls });
+    });
+
+    /* ---------------------------------------------------------
+       ✅ FILENAME SYNC WITH DESCRIPTION FILTER
+       Example:
+       Filter = "All Fees" → Cash_Inflow_All_Fees.xlsx
+       Filter = "Enrollment" → Cash_Inflow_Enrollment.xlsx
+    --------------------------------------------------------- */
+
+    let selectedFee = document.getElementById("descFilter").value;
+
+    if (!selectedFee || selectedFee.trim() === "") {
+        selectedFee = "All_Fees";
+    } else {
+        selectedFee = selectedFee.replace(/\s+/g, "_"); // convert spaces → underscores
+    }
+
+    const fileName = `Cash_Inflow_${selectedFee}.xlsx`;
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+    XLSX.writeFile(workbook, fileName);
+}
+
+// --- JS Date Labels (Sunday–Saturday Week Range) ---
+function updateFinanceDates() {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const monthOptions = { month: 'long', year: 'numeric' };
+
+    // ✅ Today
+    document.getElementById("today-date").textContent =
+        today.toLocaleDateString('en-US', options);
+
+    // ✅ Sunday–Saturday WEEK RANGE
+    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - currentDay);  // Move to Sunday
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);       // Add days until Saturday
+
+    document.getElementById("week-range").textContent =
+        `${startOfWeek.toLocaleDateString('en-US', options)} - ${endOfWeek.toLocaleDateString('en-US', options)}`;
+
+    // ✅ Month Label
+    document.getElementById("month-name").textContent =
+        today.toLocaleDateString('en-US', monthOptions);
+
+    // ✅ Generated date for table header
+    document.getElementById("generated-date").textContent =
+        today.toLocaleDateString('en-US', options);
+}
+
+// ✅ Run on page load
+updateFinanceDates();
+
+</script>
+
+{% endblock %}

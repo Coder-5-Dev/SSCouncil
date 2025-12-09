@@ -1,0 +1,311 @@
+/* === GLOBAL STYLES === */
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+  margin: 0;
+  background-color: #121212;
+  color: #f1f1f1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* === CONTAINERS & CARDS === */
+.container {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: #2b2b2b;
+  color: #f0f0f0;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: none;
+  animation: fadeIn 0.4s ease;
+}
+
+/* === HEADERS === */
+.hero h1 {
+  font-size: 1.8rem;
+  color: #90caf9;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.hero p {
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+/* ===================== Header Section ===================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 65px;
+  background: var(--header-bg);
+  color: var(--text);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.header-user .material-icons-outlined {
+  font-size: 28px;
+  color: var(--text);
+}
+
+/* === DATE DISPLAY === */
+.date-display {
+  font-size: 0.9rem;
+  text-align: right;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+/* === CATEGORY SELECTOR & FILTER === */
+.category-selector {
+  background: #1b1b1b;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+}
+
+.category-selector label {
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.category-selector input[type="text"],
+.category-selector input[type="date"] {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: #fff;
+  width: 280px;
+}
+
+.category-selector button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: none;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-section input[type="date"] {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  background: #333;
+  color: #fff;
+}
+
+.filter-section button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: #00b894;
+  color: #fff;
+  transition: none;
+}
+
+/* === TABLES & TABLE SECTIONS === */
+.tables-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.table-section {
+  background: #1b1b1b;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #333;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.table-header h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: #64b5f6;
+}
+
+.table-header small {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* --- Expense Form --- */
+.expense-form {
+  margin-top: 15px;
+  padding: 12px;
+  background: #1e1e1e;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.expense-form input, .expense-form button {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.95em;
+}
+
+.expense-form input {
+  flex: 1 1 150px;
+  background: #333;
+  color: #fff;
+}
+
+.expense-form input::placeholder { color: #aaa; }
+
+.expense-form button {
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: none;
+}
+
+/* --- Table Styling --- */
+.expense-table {
+  width: 100%;
+  margin-top: 15px;
+  border-collapse: collapse;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.expense-table th, .expense-table td {
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  text-align: left;
+}
+
+.expense-table th {
+  background: #333;
+  color: #fff;
+  font-weight: 600;
+}
+
+.expense-table tr:nth-child(even) { background: #222; }
+.expense-table tr:hover { background: #222; }
+
+/* --- Total Container --- */
+.total-container {
+  margin-top: 10px;
+  font-size: 1.1em;
+  font-weight: 600;
+  text-align: right;
+  color: #00ffab;
+}
+
+/* --- Action Buttons in Table --- */
+.edit-btn, .update-btn, .cancel-btn, .delete-btn, .exportBtn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85em;
+  margin-right: 4px;
+  transition: none;
+}
+
+.edit-btn { background-color: #ffc107; color: #000; }
+.update-btn { background-color: #28a745; color: #fff; }
+.cancel-btn { background-color: #6c757d; color: #fff; }
+.delete-btn { background-color: #dc3545; color: #fff; }
+.exportBtn { background-color: #17a2b8; color: #fff; }
+
+/* --- Other Buttons --- */
+.saveListBtn { background-color: #5eead4; color: #1d2634; }
+.removeTableInlineBtn { background-color: #f87171; color: #1d2634; }
+.save-btn { background-color: #10b981; color: #fff; }
+
+/* --- Save-All Container --- */
+.save-all-container {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-all-container button {
+  padding: 10px 16px;
+  background: #28a745;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* --- Expense List Container --- */
+.expense-list-container {
+  margin-top: 20px;
+  background: #1b1b1b;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.expense-list-container h3 {
+  color: #64b5f6;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive Adjustments --- */
+@media(max-width:768px){
+  .expense-form { flex-direction: column; }
+  .expense-form input, .expense-form button { flex: 1 1 100%; }
+}

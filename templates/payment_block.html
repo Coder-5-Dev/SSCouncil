@@ -1,0 +1,372 @@
+{% extends "dept.html" %}
+
+{% block title %}Membership & Transaction Management - SSC Financial Management{% endblock %}
+
+{% block content %}
+<section class="card" style="max-width:100%;margin:20px auto;">
+  <h1 style="text-align:center;"><i class="fa-solid fa-id-card"></i> SSC MEMBERSHIP & PAYMENT MANAGEMENT PANEL</h1>
+  <p style="text-align:center;">Manage student memberships and payment transactions efficiently.</p>
+
+  <!-- === FORM === -->
+  <form id="managementForm" autocomplete="off">
+    <div class="form-layout">
+
+      <!-- === Left Column: Membership & Transaction Info === -->
+      <div class="form-group">
+        <label for="member_date">Date</label>
+        <input class="input" id="member_date" type="text" disabled />
+
+        <br>
+        <label for="transaction_id">Select Transaction Fee (from Admin)</label>
+        <select class="input" id="transaction_id" required>
+          <option value="">Select Transaction</option>
+          {% for transaction in transactions %}
+          <option value="{{ transaction.id }}" data-fee="{{ transaction.total_fee }}" data-desc="{{ transaction.description }}">
+            {{ transaction.description }} - ₱{{ transaction.total_fee }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <br>
+        <label for="fee_description">Fee Description</label>
+        <input class="input" id="fee_description" type="text" placeholder="Auto-filled when selecting transaction" disabled />
+
+        <br>
+        <label for="member_type">Membership Type</label>
+        <select class="input" id="member_type">
+          <option value="Freshmen">Freshmen</option>
+          <option value="Old Student">Old Student</option>
+        </select>
+      </div>
+
+      <!-- === Right Column: Student Info === -->
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="serial">Serial Number</label>
+          <input class="input" id="serial" type="text" value="{{ next_serial_formatted }}" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="student_number">Student Number</label>
+          <input class="input no-spin" id="student_number" type="number" placeholder="Enter Student Number" required />
+        </div>
+
+        <div class="form-group">
+          <label for="surname">Surname</label>
+          <input class="input" id="surname" type="text" placeholder="Enter Surname" required />
+        </div>
+
+        <div class="form-group">
+          <label for="firstname">First Name</label>
+          <input class="input" id="firstname" type="text" placeholder="Enter First Name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="middlename">Middle Name</label>
+          <input class="input" id="middlename" type="text" placeholder="Enter Middle Name" />
+        </div>
+
+        <div class="form-group">
+          <label for="transferee">Transferee</label>
+          <select class="input" id="transferee">
+            <option value="yes">Yes</option>
+            <option value="no" selected>No</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="department">Department</label>
+          <select class="input" id="department">
+            <option>COA</option>
+            <option>CTED</option>
+            <option>CITE</option>
+            <option>CNM</option>
+            <option>COC</option>
+            <option>CBA</option>
+            <option>CHM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="course">Course</label>
+          <select class="input" id="course">
+            <option>BSA</option>
+            <option>BSAIS</option>
+            <option>BEEd</option>
+            <option>BSEd</option>
+            <option>BSIT</option>
+            <option>BSCpE</option>
+            <option>BSBA-FM</option>
+            <option>BSBA-MM</option>
+            <option>BSCrim</option>
+            <option>BSHM</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="level">Year Level</label>
+          <select class="input" id="level">
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option>3rd Year</option>
+            <option>4th Year</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn" onclick="addToList()">
+            <i class="fa-solid fa-plus"></i> Add to List
+          </button>
+          <button type="button" class="btn-save" onclick="saveAll()">
+            <i class="fa-solid fa-floppy-disk"></i> Save All
+          </button>
+          <button type="reset" class="btn-cancel" onclick="clearSessionStorage()">
+            <i class="fa-solid fa-rotate-left"></i> Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- === STUDENTS TABLE === -->
+  <h2 style="margin-top:30px;"><i class="fa-solid fa-list"></i> Students to be Registered</h2>
+  <table id="studentTable" class="styled-table">
+    <thead>
+      <tr>
+        <th>Serial</th>
+        <th>Student No.</th>
+        <th>Full Name</th>
+        <th>Transferee</th>
+        <th>Department</th>
+        <th>Course</th>
+        <th>Level</th>
+        <th>Fee Description</th>
+        <th>Transaction Fee</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<script>
+  // === LIVE DATE ===
+  function updateDateTime() {
+    const now = new Date();
+    const options = { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+    document.getElementById('member_date').value = now.toLocaleString('en-US', options);
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  // === COURSES BY DEPARTMENT ===
+  const departmentCourses = {
+    COA: ["BSA", "BSAIS"],
+    CTED: ["BEEd", "BSEd"],
+    CITE: ["BSIT", "BSCpE"],
+    CBA: ["BSBA-FM", "BSBA-MM"],
+    CNM: ["BSCrim"],
+    CHM: ["BSHM"],
+    COC: ["Other Course"]
+  };
+
+  const deptDropdown = document.getElementById('department');
+  const courseDropdown = document.getElementById('course');
+  const levelDropdown = document.getElementById('level');
+  const memberTypeDropdown = document.getElementById('member_type');
+  const transactionDropdown = document.getElementById('transaction_id');
+  const feeDescriptionInput = document.getElementById('fee_description');
+
+  // === SERIAL NUMBER ===
+  let nextSerial = parseInt("{{ next_serial_formatted }}", 10) || 1;
+  function formatSerial(num){ return num.toString().padStart(4,'0'); }
+  document.getElementById('serial').value = formatSerial(nextSerial);
+
+  // === STUDENT LIST ===
+  let studentList = [];
+  const savedList = localStorage.getItem("studentList");
+  if(savedList){ studentList = JSON.parse(savedList); renderTable(); }
+
+  // === COURSE UPDATE ===
+  function updateCourseOptions(preserveSelection=true){
+    const selectedDept = deptDropdown.value;
+    const courses = departmentCourses[selectedDept] || [];
+    const currentCourse = courseDropdown.value;
+
+    courseDropdown.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Select Course --';
+    courseDropdown.appendChild(defaultOption);
+
+    courses.forEach(c=>{
+      const opt=document.createElement('option');
+      opt.value=c; opt.textContent=c; courseDropdown.appendChild(opt);
+    });
+
+    if(preserveSelection && courses.includes(currentCourse)){ courseDropdown.value=currentCourse; }
+    else if(courses.length>0){ courseDropdown.value=courses[0]; }
+
+    localStorage.setItem("selectedDepartment", deptDropdown.value);
+    localStorage.setItem("selectedCourse", courseDropdown.value);
+  }
+
+  // === YEAR LEVEL UPDATE ===
+  function updateYearLevelOptions(){
+    const memberType = memberTypeDropdown.value;
+    for(let i=0;i<levelDropdown.options.length;i++){ 
+      levelDropdown.options[i].disabled=false; 
+      levelDropdown.options[i].style.color=''; 
+    }
+    if(memberType==='Freshmen'){
+      for(let i=1;i<levelDropdown.options.length;i++){ levelDropdown.options[i].disabled=true; levelDropdown.options[i].style.color='gray'; }
+      levelDropdown.value='1st Year';
+    }else if(memberType==='Old Student'){
+      levelDropdown.options[0].disabled=true; levelDropdown.options[0].style.color='gray';
+      if(levelDropdown.value==='1st Year'){ levelDropdown.value='2nd Year'; }
+    }
+  }
+
+  // === TRANSACTION DESCRIPTION AUTO-FILL ===
+  transactionDropdown.addEventListener('change', ()=>{
+    const selectedOption = transactionDropdown.options[transactionDropdown.selectedIndex];
+    feeDescriptionInput.value = selectedOption?.dataset.desc || '';
+  });
+
+  // === ADD STUDENT TO LIST ===
+  function addToList(){
+    const selectedOption = transactionDropdown.options[transactionDropdown.selectedIndex];
+    const fee = selectedOption?.dataset.fee || '0.00';
+    const desc = selectedOption?.dataset.desc || '';
+    const currentDate = document.getElementById('member_date').value;
+
+    const student = {
+      serial_number: formatSerial(nextSerial),
+      date: currentDate,
+      student_number: document.getElementById('student_number').value.trim(),
+      surname: document.getElementById('surname').value.trim(),
+      firstname: document.getElementById('firstname').value.trim(),
+      middlename: document.getElementById('middlename').value.trim(),
+      transferee: document.getElementById('transferee').value,
+      department: deptDropdown.value,
+      course: courseDropdown.value,
+      level: levelDropdown.value,
+      member_type: memberTypeDropdown.value,
+      transaction_id: transactionDropdown.value,
+      transaction_fee: fee,
+      fee_description: desc
+    };
+
+    if(!student.student_number||!student.firstname||!student.surname||!student.course){ alert('Please fill all required fields'); return; }
+
+    studentList.push(student);
+    localStorage.setItem('studentList',JSON.stringify(studentList));
+    renderTable();
+    clearInputFields();
+    nextSerial++; document.getElementById('serial').value=formatSerial(nextSerial);
+  }
+
+  function clearInputFields(){
+    ["student_number","surname","firstname","middlename","level","transaction_id","fee_description"].forEach(id=>{
+      document.getElementById(id).value='';
+      localStorage.removeItem(id);
+    });
+  }
+
+  function removeStudent(index){
+    studentList.splice(index,1);
+    localStorage.setItem('studentList',JSON.stringify(studentList));
+    renderTable();
+  }
+
+  function renderTable(){
+    const tbody=document.querySelector('#studentTable tbody');
+    tbody.innerHTML='';
+    studentList.forEach((s,i)=>{
+      const row=document.createElement('tr');
+      row.innerHTML=`
+        <td>${s.serial_number}</td>
+        <td>${s.student_number}</td>
+        <td>${s.surname}, ${s.firstname} ${s.middlename}</td>
+        <td>${s.transferee}</td>
+        <td>${s.department}</td>
+        <td>${s.course}</td>
+        <td>${s.level}</td>
+        <td>${s.fee_description}</td>
+        <td>₱${s.transaction_fee}</td>
+        <td><button class="btn-cancel" onclick="removeStudent(${i})"><i class="fa-solid fa-trash"></i> Remove</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // === SAVE ALL TO SERVER ===
+  async function saveAll(){
+    if(studentList.length===0){ alert('No students to save.'); return; }
+    try{
+      const response = await fetch("{{ url_for('membership_page') }}",{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({students:studentList})
+      });
+      const data = await response.json();
+      if(data.success){
+        alert('All students saved successfully!');
+        studentList=[]; localStorage.removeItem('studentList'); renderTable();
+        nextSerial=parseInt("{{ next_serial_formatted }}",10)||1;
+        document.getElementById('serial').value=formatSerial(nextSerial);
+      }else{ alert('Error: '+(data.message||'Unknown error')); }
+    }catch(err){ console.error(err); alert('Error saving data.'); }
+  }
+
+  // === FETCH STUDENT BY NUMBER ===
+  async function fetchStudentData(){
+    const sn=document.getElementById('student_number').value.trim();
+    if(!sn) return;
+    try{
+      const res = await fetch(`/api/get_student/${sn}`);
+      const data = await res.json();
+      if(data.success && data.student){
+        const s = data.student;
+        document.getElementById('surname').value=s.surname||'';
+        document.getElementById('firstname').value=s.first_name||'';
+        document.getElementById('middlename').value=s.middle_name||'';
+        deptDropdown.value=s.department||''; updateCourseOptions(false);
+        courseDropdown.value=s.course||'';
+        levelDropdown.value=s.level||'';
+        ["surname","firstname","middlename","level"].forEach(id=>localStorage.setItem(id,document.getElementById(id).value));
+        localStorage.setItem("selectedDepartment",deptDropdown.value);
+        localStorage.setItem("selectedCourse",courseDropdown.value);
+      }else{ alert(data.message||'No record found'); }
+    }catch(err){ console.error(err); alert('Error fetching student data'); }
+  }
+
+  document.getElementById('student_number').addEventListener('blur', fetchStudentData);
+  document.getElementById('student_number').addEventListener('keypress',e=>{ if(e.key==='Enter'){ e.preventDefault(); fetchStudentData(); } });
+
+  // === EVENT LISTENERS ===
+  document.addEventListener('DOMContentLoaded',()=>{
+    // Restore dept/course
+    const savedDept = localStorage.getItem('selectedDepartment');
+    const savedCourse = localStorage.getItem('selectedCourse');
+    if(savedDept && departmentCourses[savedDept]){ deptDropdown.value=savedDept; updateCourseOptions(false); if(savedCourse && departmentCourses[savedDept].includes(savedCourse)) courseDropdown.value=savedCourse; }
+    else updateCourseOptions();
+
+    // Restore other fields
+    ["student_number","surname","firstname","middlename","level","transaction_id"].forEach(id=>{
+      const saved=localStorage.getItem(id); if(saved) document.getElementById(id).value=saved;
+    });
+
+    updateYearLevelOptions();
+  });
+
+  deptDropdown.addEventListener('change', updateCourseOptions);
+  courseDropdown.addEventListener('change',()=>{ localStorage.setItem('selectedCourse',courseDropdown.value); });
+  memberTypeDropdown.addEventListener('change',()=>{ updateYearLevelOptions(); });
+
+  // === CLEAR SESSION ===
+  function clearSessionStorage(){ localStorage.clear(); sessionStorage.clear(); location.reload(); }
+
+</script>
+
+{% endblock %}

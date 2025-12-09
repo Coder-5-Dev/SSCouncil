@@ -1,0 +1,191 @@
+{% extends "locker.html" %}
+
+{% block title %}Rental Locker - SSC Financial Management{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- HERO / HEADER -->
+  <section class="hero">
+    <h1>SSC RENTAL LOCKER MANAGEMENT</h1>
+    <p>Rent a Locker for Personal Storage</p>
+  </section>
+
+  <!-- TWO-COLUMN LAYOUT -->
+  <div class="two-column-layout" style="height: 600px; gap:20px;">
+
+    <!-- LEFT COLUMN: RENTAL FORM -->
+    <section class="locker-form card" style="flex:1; min-width:300px;">
+      <h3>Student Info</h3>
+      <form id="rentalForm" method="POST" action="{{ url_for('rental_page') }}" autocomplete="off">
+
+        <!-- Rental Date -->
+        <div class="form-grid two-columns">
+          <div class="form-group">
+            <label for="member_date">Rental Date & Time</label>
+            <input class="input" id="member_date" name="member_date" type="text" disabled />
+          </div>
+        </div>
+
+        <!-- Student Info -->
+        <div class="form-grid two-columns">
+          <div class="form-group">
+            <label for="student_number">Student Number</label>
+            <input class="input no-spin" id="student_number" name="student_number" type="number" placeholder="Enter Student Number" required />
+          </div>
+          <div class="form-group">
+            <label for="surname">Surname</label>
+            <input class="input" id="surname" name="surname" type="text" placeholder="Enter Surname" required />
+          </div>
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input class="input" id="first_name" name="first_name" type="text" placeholder="Enter First Name" required />
+          </div>
+          <div class="form-group">
+            <label for="middle_name">Middle Name</label>
+            <input class="input" id="middle_name" name="middle_name" type="text" placeholder="Enter Middle Name" required />
+          </div>
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select class="input" id="department" name="department" required>
+              <option value="">-- Select Department --</option>
+              <option>COA</option><option>CTED</option><option>CITE</option>
+              <option>CNM</option><option>COC</option><option>CBA</option><option>CHM</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="course">Course</label>
+            <select class="input" id="course" name="course" required>
+              <option value="">-- Select Course --</option>
+              <option>BSA</option><option>BSAIS</option><option>BEEd</option><option>BSEd</option>
+              <option>BSIT</option><option>BSCpE</option><option>BSBA-FM</option><option>BSBA-MM</option>
+              <option>BSCrim</option><option>BSHM</option><option>Other Course</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="contactNumber">Contact Number</label>
+            <input class="input" id="contactNumber" name="contactNumber" type="text" placeholder="Enter contact number" required />
+          </div>
+          <div class="form-group">
+            <label for="lockerSelect">Select Locker</label>
+            <select id="lockerSelect" name="lockerSelect" required>
+              <option value="">-- Select Locker --</option>
+              {% for letter, lockers in lockers_by_letter.items() %}
+                <optgroup label="Lockers {{ letter }}">
+                  {% for locker in lockers %}
+                    <option value="{{ locker.locker_letter }}-{{ locker.locker_number }}" {% if locker.status == 'Occupied' %}disabled{% endif %}>
+                      {{ locker.locker_letter }}-{{ locker.locker_number }} {% if locker.status == 'Occupied' %}(Occupied){% endif %}
+                    </option>
+                  {% endfor %}
+                </optgroup>
+              {% endfor %}
+            </select>
+          </div>
+
+          <input type="hidden" id="full_name" name="full_name" />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">Rent Locker</button>
+          <button type="reset" class="btn-cancel">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- RIGHT COLUMN: LOCKER AVAILABILITY GRID -->
+    <section class="locker-grid-container card" style="flex:1; width:75%; overflow-x:auto;">
+      <h3>Locker Availability</h3>
+      {% for letter, lockers in lockers_by_letter.items() %}
+        <h4 style="margin-top:15px; margin-bottom:5px;">Lockers {{ letter }}</h4>
+        <div class="locker-grid letter-row">
+          {% for locker in lockers %}
+            <div class="locker {% if locker.status == 'Available' %}available{% else %}occupied{% endif %}">
+              {{ locker.locker_letter }}-{{ locker.locker_number }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <p class="legend" style="margin-top:15px;">
+        <span class="legend-box available"></span> Available
+        <span class="legend-box occupied"></span> Occupied
+      </p>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  // Real-time date/time
+  function updateDateTime() {
+    const now = new Date();
+    const options = { year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+    document.getElementById('member_date').value = now.toLocaleString('en-US', options);
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  // Department → Course mapping
+  const deptDropdown = document.getElementById('department');
+  const courseDropdown = document.getElementById('course');
+  const allCourses = Array.from(courseDropdown.options).map(opt => ({ value: opt.value, text: opt.textContent }));
+  const departmentCourses = {
+    "COA": ["BSA","BSAIS"], "CTED": ["BEEd","BSEd"], "CITE": ["BSIT","BSCpE"],
+    "CBA": ["BSBA-FM","BSBA-MM"], "CNM": ["BSCrim"], "CHM": ["BSHM"], "COC": ["Other Course"]
+  };
+  function updateCourseOptions(preserveSelection = true) {
+    const selectedDept = deptDropdown.value;
+    const validCourses = departmentCourses[selectedDept] || [];
+    const currentCourse = courseDropdown.value;
+    courseDropdown.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Select Course --';
+    courseDropdown.appendChild(defaultOption);
+    allCourses.forEach(course => {
+      if (validCourses.includes(course.value)) {
+        const opt = document.createElement('option');
+        opt.value = course.value;
+        opt.textContent = course.text;
+        courseDropdown.appendChild(opt);
+      }
+    });
+    if (preserveSelection && validCourses.includes(currentCourse)) courseDropdown.value = currentCourse;
+    else if (validCourses.length > 0) courseDropdown.value = validCourses[0];
+  }
+  deptDropdown.addEventListener('change', updateCourseOptions);
+
+  // Auto-fill student info
+  const studentInput = document.getElementById('student_number');
+  studentInput.addEventListener('blur', () => {
+    const studentNumber = studentInput.value.trim();
+    if (!studentNumber) return;
+
+    fetch(`/api/check_rental_payment/${studentNumber}`)
+      .then(res => res.ok ? res.json() : Promise.reject('Student not found'))
+      .then(data => {
+        const student = data.student || {};
+        if (!data.success) { alert(data.message || 'Cannot proceed.'); resetStudentFields(); return; }
+
+        document.getElementById('first_name').value = student.first_name || '';
+        document.getElementById('middle_name').value = student.middle_name || '';
+        document.getElementById('surname').value = student.surname || '';
+        document.getElementById('full_name').value = [student.first_name, student.middle_name, student.surname].filter(Boolean).join(' ');
+
+        if (student.department) { deptDropdown.value = student.department; updateCourseOptions(false); }
+        if (student.course) courseDropdown.value = student.course;
+      })
+      .catch(err => { console.log(err); alert('Student not found.'); resetStudentFields(); });
+  });
+
+  function resetStudentFields() {
+    studentInput.value = '';
+    document.getElementById('surname').value = '';
+    document.getElementById('first_name').value = '';
+    document.getElementById('middle_name').value = '';
+    document.getElementById('full_name').value = '';
+    deptDropdown.value = '';
+    courseDropdown.value = '';
+  }
+</script>
+{% endblock %}

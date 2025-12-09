@@ -1,0 +1,23 @@
+/* ===================== HEADER BAR ===================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 65px;
+  background: var(--header-bg, #1b1b1b);
+  color: var(--text, #f1f1f1);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.header-user .material-icons-outlined {
+  font-size: 28px;
+  color: var(--text, #f1f1f1);
+}

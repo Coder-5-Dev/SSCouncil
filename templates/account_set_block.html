@@ -1,0 +1,227 @@
+{% extends "account_set_up.html" %}
+
+{% block title %}Account Set Up - SSC Administrator Management{% endblock %}
+
+{% block content %}
+<section class="hero card" aria-hidden="false">
+    <div class="logo" aria-hidden="true"></div>
+    <h1 id="profile-heading">User Accounts Management</h1>
+    <p>View basic information about users, including their names, roles, and account status.</p>
+
+    <!-- User Accounts Table -->
+    <div class="table-container">
+        <table class="user-table" id="userTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for account in accounts %}
+                <tr data-id="{{ account.id }}" data-status="{{ account.status }}">
+                    <td>{{ account.username }}</td>
+                    <td>{{ account.email }}</td>
+                    <td class="td-password">
+                        <span class="pw-display">••••••••</span>
+                        <input type="password" class="input-inline pw-edit" style="display:none" value="{{ account.password }}">
+                        <span class="pw-feedback small" style="display:none"></span>
+                    </td>
+                    <td>{{ account.role }}</td>
+                    <td class="td-status">
+                        <span class="status-text {% if account.status == 'disabled' %}disabled{% else %}active{% endif %}">
+                            {{ account.status|capitalize }}
+                        </span>
+                    </td>
+                    <td class="td-actions">
+                        <button type="button" class="btn-small toggle-pw" title="Show password">👁</button>
+                        <button type="button" class="btn-small edit-pw">Edit</button>
+                        <button type="button" class="btn-small save-pw" style="display:none">Save</button>
+                        <button type="button" class="btn-small cancel-pw" style="display:none">Cancel</button>
+                        <button type="button" class="btn-small toggle-status" data-status="{{ account.status }}">
+                            {% if account.status == 'disabled' %}Enable{% else %}Disable{% endif %}
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Register Form -->
+<aside class="card form-box" aria-labelledby="form-title" role="region">
+    <h2 id="form-title">SSC User Accounts Set Up</h2>
+    <form id="registerForm" method="POST" action="{{ url_for('register') }}" novalidate>
+        <!-- Username -->
+        <div class="form-group">
+            <input class="input" id="name" type="text" name="name" placeholder="Enter Username" required>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <input class="input" id="email" type="email" name="email" placeholder="Enter Email" required>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+            <div class="pw-wrap">
+                <input id="password" name="password" type="password" class="input" placeholder="• • • • • • • •" autocomplete="new-password"/>
+                <button type="button" class="pw-toggle" aria-pressed="false" id="pwToggle" title="Show password">Show</button>
+            </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-group">
+            <select class="input" id="role" name="role" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="operation_activities">Operation Activities</option>
+                <option value="financial_activities">Financial Activities</option>
+                <option value="adviser">Adviser</option>
+                <option value="admin">Administrator</option>
+                <option value="vice_admin">Vice Administrator</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="submitBtn" type="submit" class="btn">Create Account</button>
+
+        <!-- Feedback -->
+        <div id="feedback" role="status" aria-live="polite" class="feedback"></div>
+    </form>
+</aside>
+
+<script>
+// ---------- Show/Hide Password Toggle ----------
+document.querySelectorAll('.toggle-pw').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const row = e.target.closest('tr');
+        const pwSpan = row.querySelector('.pw-display');
+        const pwInput = row.querySelector('.pw-edit');
+
+        if (pwInput.style.display !== 'none') {
+            pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
+        } else {
+            pwSpan.textContent = pwSpan.textContent === '••••••••' ? (row.dataset.password || pwSpan.dataset.original || '********') : '••••••••';
+        }
+    });
+});
+
+// Store original password
+document.querySelectorAll('.user-table tr').forEach(row => {
+    const pwInput = row.querySelector('.pw-edit');
+    const pwSpan = row.querySelector('.pw-display');
+    if (pwInput && pwSpan) {
+        pwSpan.dataset.original = pwInput.value;
+        row.dataset.password = pwInput.value;
+    }
+});
+
+/* ---------- Edit / Cancel Password ---------- */
+document.querySelectorAll('.edit-pw').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const row = e.target.closest('tr');
+        row.querySelector('.pw-display').style.display = 'none';
+        row.querySelector('.pw-edit').style.display = 'inline-block';
+        row.querySelector('.edit-pw').style.display = 'none';
+        row.querySelector('.save-pw').style.display = 'inline-block';
+        row.querySelector('.cancel-pw').style.display = 'inline-block';
+        row.querySelector('.pw-feedback').style.display = 'none';
+        row.querySelector('.pw-edit').type = 'password';
+    });
+});
+
+document.querySelectorAll('.cancel-pw').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const row = e.target.closest('tr');
+        row.querySelector('.pw-display').style.display = 'inline';
+        row.querySelector('.pw-edit').style.display = 'none';
+        row.querySelector('.edit-pw').style.display = 'inline-block';
+        row.querySelector('.save-pw').style.display = 'none';
+        row.querySelector('.cancel-pw').style.display = 'none';
+        row.querySelector('.pw-feedback').style.display = 'none';
+    });
+});
+
+/* ---------- Save Password with AJAX ---------- */
+document.querySelectorAll('.save-pw').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const row = e.target.closest('tr');
+        const newPassword = row.querySelector('.pw-edit').value;
+        const accountId = row.dataset.id;
+        const feedback = row.querySelector('.pw-feedback');
+
+        if (!newPassword) {
+            feedback.textContent = 'Password cannot be empty!';
+            feedback.style.color = 'var(--danger)';
+            feedback.style.display = 'inline';
+            return;
+        }
+
+        fetch('{{ url_for("update_password") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `account_id=${accountId}&new_password=${encodeURIComponent(newPassword)}`
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            feedback.textContent = data.message;
+            feedback.style.color = data.status === 'success' ? 'var(--success)' : 'var(--danger)';
+            feedback.style.display = 'inline';
+
+            if (data.status === 'success') {
+                row.dataset.password = newPassword;
+                row.querySelector('.pw-display').textContent = '••••••••';
+                row.querySelector('.pw-display').style.display = 'inline';
+                row.querySelector('.pw-edit').style.display = 'none';
+                row.querySelector('.edit-pw').style.display = 'inline-block';
+                row.querySelector('.save-pw').style.display = 'none';
+                row.querySelector('.cancel-pw').style.display = 'none';
+            }
+        })
+        .catch(() => {
+            feedback.textContent = 'Update failed!';
+            feedback.style.color = 'var(--danger)';
+            feedback.style.display = 'inline';
+        });
+    });
+});
+
+/* ---------- Toggle Account Status ---------- */
+document.querySelectorAll('.toggle-status').forEach(btn => {
+    btn.addEventListener('click', e => {
+        const row = e.target.closest('tr');
+        const accountId = row.dataset.id;
+        const currentStatus = row.dataset.status;
+        const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
+
+        fetch('{{ url_for("toggle_account_status") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `account_id=${accountId}&status=${newStatus}`
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.status === 'success') {
+                row.dataset.status = newStatus;
+                const statusText = row.querySelector('.status-text');
+                statusText.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+                statusText.className = `status-text ${newStatus}`;
+                btn.textContent = newStatus === 'active' ? 'Disable' : 'Enable';
+            }
+        })
+        .catch(() => alert("Failed to toggle account status!"));
+    });
+});
+</script>
+
+<style>
+.status-text.active { color: var(--success); font-weight: 600; }
+.status-text.disabled { color: var(--danger); font-weight: 600; }
+.btn-small.toggle-status { margin-left: 4px; }
+</style>
+{% endblock %}

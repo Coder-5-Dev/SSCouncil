@@ -1,0 +1,313 @@
+/* -------------------- Layout Base -------------------- */
+:root {
+  --sidebar-bg: #263043;
+  --header-bg: #1e293b;
+  --accent: #5eead4;
+  --text: #fff;
+}
+
+/* -------------------- Global Reset -------------------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #111827;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* -------------------- Header -------------------- */
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  background: var(--header-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 2000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  animation: navbarSlideDown 0.6s ease;
+}
+
+header .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+header .menu-toggle {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 26px;
+  transition: color 0.3s ease;
+}
+header .menu-toggle:hover {
+  color: var(--accent);
+}
+
+/* -------------------- Sidebar -------------------- */
+#sidebar {
+  position: fixed;
+  left: -260px;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  background-color: var(--sidebar-bg);
+  overflow-y: auto;
+  padding: 20px 0;
+  transition: left 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  opacity: 0;
+  z-index: 2500;
+}
+#sidebar.open {
+  left: 0;
+  opacity: 1;
+}
+
+/* -------------------- Overlay -------------------- */
+#sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+#sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* -------------------- Sidebar Content -------------------- */
+.sidebar-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-list-item {
+  padding: 0;
+}
+
+/* -------------------- Sidebar Buttons -------------------- */
+.sidebar-list-item button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 16px;
+  text-align: left;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.sidebar-list-item button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px) scale(1.05);
+}
+
+/* -------------------- Main Content -------------------- */
+main {
+  margin-top: 65px;
+  padding: 25px;
+  transition: margin-left 0.4s ease-in-out;
+}
+#sidebar.open ~ main {
+  margin-left: 260px;
+}
+
+/* -------------------- Footer -------------------- */
+.footer {
+  background-color: #0f1724;
+  color: #9ea4b0;
+  padding: 6px 18px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-size: 13px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 3000;
+}
+.footer .footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.footer p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+.footer-right {
+  color: var(--accent);
+  font-weight: 500;
+  font-family: monospace;
+}
+
+/* ---------- Hover-Up Effect ---------- */
+.hero,
+.card {
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+  transform: translateY(0);
+}
+.hero:hover,
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 16px 35px rgba(94, 234, 212, 0.25);
+  border-color: rgba(94, 234, 212, 0.3);
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes navbarSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------- Extra Small Devices (up to 360px) -------------------- */
+@media (max-width: 360px) {
+  header {
+    height: 55px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+  header .brand {
+    font-size: 18px;
+    gap: 6px;
+  }
+  header .menu-toggle {
+    font-size: 22px;
+  }
+  #sidebar {
+    width: 200px;
+    padding: 15px 0;
+  }
+  .sidebar-title {
+    padding: 18px;
+    font-size: 18px;
+  }
+  .sidebar-list-item button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  main {
+    padding: 15px;
+  }
+  .hero,
+  .card {
+    padding: 14px;
+  }
+}
+
+/* -------------------- Small Devices (361px - 767px) -------------------- */
+@media (min-width: 361px) and (max-width: 767px) {
+  header {
+    height: 60px;
+  }
+  header .brand {
+    font-size: 18px;
+  }
+  #sidebar {
+    width: 220px;
+  }
+  main {
+    padding: 20px;
+  }
+  .hero,
+  .card {
+    padding: 16px;
+  }
+}
+
+/* -------------------- Medium Devices / Tablets (768px - 991px) -------------------- */
+@media (min-width: 768px) and (max-width: 991px) {
+  #sidebar {
+    width: 240px;
+  }
+  main {
+    padding: 22px;
+  }
+  .hero,
+  .card {
+    padding: 18px;
+  }
+}
+
+/* -------------------- Large Devices / Laptops (992px - 1199px) -------------------- */
+@media (min-width: 992px) and (max-width: 1199px) {
+  main {
+    padding: 25px 30px;
+  }
+  .hero,
+  .card {
+    padding: 20px;
+  }
+}
+
+/* -------------------- Extra Large Devices / Desktops (1200px+) -------------------- */
+@media (min-width: 1200px) {
+  main {
+    padding: 30px 50px;
+  }
+  .hero,
+  .card {
+    padding: 25px;
+  }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SSC Financial Management{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='pics/SSC4.ico') }}">
+
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- Material Icons-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{url_for('static', filename="css/locker_rent.css")}}">
+    <link rel="stylesheet" href="{{url_for('static', filename="css/student_locker_info.css")}}">
+    <link rel="stylesheet" href="{{url_for('static', filename="css/layout_grid_box.css")}}">
+    <link rel="stylesheet" href="{{url_for('static', filename="css/main_template.css")}}">
+    <link rel="stylesheet" href="{{url_for('static', filename="css/sidebar.css")}}">
+
+</head>
+<body>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <span class="material-icons-outlined" id="menuToggle" onclick="toggleSidebar()">menu</span>
+        
+        <!-- Username Display with Profile Icon -->
+        <div class="header-user">
+            <span class="material-icons-outlined">account_circle</span>
+            <span class="header-username"> {{ username }}</span>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+        {% include "locker_rent_nav.html" %}
+    <!-- End Sidebar -->
+
+    <!-- Main Content -->
+    <main class="main-container">
+        {% block content %}{% endblock %}
+    </main>
+    <!-- End Main -->
+
+    <!-- Footer -->
+        {% include "footer.html"%}
+    <!-- End Footer -->
+
+    <!-- Scripts -->
+    <!-- Custom JS -->
+     <script src="{{url_for('static', filename="js/.js")}}"></script>
+     <script src="{{url_for('static', filename="js/sidebar.js")}}"></script>
+</body>
+</html>

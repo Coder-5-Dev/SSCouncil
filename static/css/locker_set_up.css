@@ -1,0 +1,260 @@
+/* ===== Root Colors ===== */
+:root {
+    --bg: #0f1724;
+    --accent: #5eead4;
+    --muted: #9aa4b2;
+    --success: #16a34a;
+    --danger: #ef4444;
+    --input-bg: #1f2937;
+    --input-border: #334155;
+    --table-header-bg: #1e293b;
+    --table-row-hover: #1f2937;
+    --font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ===== Global ===== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: var(--bg);
+    color: #fff;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+}
+
+/* ===================== Header Section ===================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 65px;
+  background: var(--header-bg);
+  color: var(--text);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.header-user .material-icons-outlined {
+  font-size: 28px;
+  color: var(--text);
+}
+
+/* ===== Hero Section ===== */
+.hero {
+    padding: 2rem;
+    width: 100%;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+}
+
+.hero p {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+}
+
+/* ===== Locker Layout ===== */
+.locker-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ===== Add Locker Form ===== */
+.setup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.setup-form label {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.locker-add-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+}
+
+/* Input wrapper */
+.locker-input-wrapper {
+    position: relative;
+}
+
+/* ===== Inputs & Selects ===== */
+.locker-input-wrapper input,
+.locker-add-row input[type="number"],
+.locker-add-row select {
+    padding: 0.5rem 0.75rem;
+    background-color: var(--input-bg);
+    color: #fff;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.locker-input-wrapper input[readonly] {
+    cursor: default;
+}
+
+.locker-add-row select,
+.locker-input-wrapper select {
+    cursor: pointer;
+}
+
+/* Focus effect for inputs */
+.locker-input-wrapper input:focus,
+.locker-add-row input:focus,
+.locker-add-row select:focus,
+.locker-input-wrapper select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-btn {
+    background-color: var(--accent);
+    color: #0f1724;
+}
+
+.save-btn:hover {
+    background-color: #3ddad4;
+}
+
+.cancel-btn {
+    background-color: var(--danger);
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background-color: #f87171;
+}
+
+.edit-btn {
+    background-color: #fbbf24;
+    color: #0f1724;
+}
+
+.update-btn {
+    background-color: var(--success);
+    color: #0f1724;
+}
+
+.remove-btn {
+    background-color: var(--danger);
+    color: #fff;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== Locker Table ===== */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 400px;
+}
+
+.transaction-table thead {
+    background-color: var(--table-header-bg);
+}
+
+.transaction-table th,
+.transaction-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.transaction-table th {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.transaction-table td {
+    color: #fff;
+}
+
+.transaction-table tbody tr {
+    border-bottom: 1px solid var(--input-border);
+    transition: background 0.2s;
+}
+
+.transaction-table tbody tr:hover {
+    background-color: var(--table-row-hover);
+}
+
+/* Locker input inside table */
+.locker-input-wrapper input.locker-number {
+    width: 60px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Number Inputs Fit & Hide Spinner */
+.locker-add-row input[type="number"],
+.locker-input-wrapper input[type="number"] {
+    width: 80px;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .locker-add-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .locker-add-row button {
+        width: 100%;
+    }
+
+    .transaction-table {
+        font-size: 0.9rem;
+    }
+}

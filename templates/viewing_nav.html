@@ -1,0 +1,16 @@
+<aside id="sidebar">
+    <div class="sidebar-title">
+        <div class="sidebar-brand">
+            <span class="material-icons-outlined">school</span> FINANCIAL MANAGEMENT
+        </div>
+        <span class="material-icons-outlined" onclick="closeSidebar()"></span>
+    </div>
+
+    <ul class="sidebar-list">
+        <li class="sidebar-list-item">
+            <button type="button" onclick="location.href='{{ url_for('index') }}'">
+                <span class="material-icons-outlined">logout</span>LOGOUT
+            </button>
+        </li>
+    </ul>
+</aside>

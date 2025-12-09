@@ -1,0 +1,183 @@
+{% extends "transaction_set_up.html" %}
+
+{% block title %} Transaction Set Up - SSC Administrator Management {% endblock %}
+
+{% block content %}
+
+<section class="hero card" aria-hidden="false">
+    <div class="logo" aria-hidden="true"></div>
+    <h1 id="profile-heading">SSC Transaction Set Up Management</h1>
+    <p>Manage the transaction of Fee's and Collectibles</p>
+
+    <div class="table-container">
+        <table class="transaction-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Description</th>
+                    <th>Total Net Fee</th>
+                    <th>School Year</th>
+                    <th>Semester</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ tx.description }}</td>
+                    <td>
+                        <input type="text" name="total-fee" value="{{ tx.total_fee }}" class="fee-input" data-id="{{ tx.id }}" disabled>
+                    </td>
+                    <td>{{ tx.school_year }}</td>
+                    <td>{{ tx.semester }}</td>
+                    <td>
+                        <button type="button" class="edit-btn">Edit</button>
+                        <button type="button" class="update-btn" disabled>Update</button>
+                        <button type="button" class="remove-btn">Remove</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<aside class="card form-box" aria-labelledby="form-title" role="region">
+    <h2 id="form-title">SSC Transaction Set Up</h2>
+    <form class="setup-form" method="post" action="{{ url_for('add_transaction') }}">
+        
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" placeholder="Enter description" required>
+
+        <label for="total-fee">Total Net Fee</label>
+        <input type="text" id="total-fee" name="total-fee" placeholder="Enter total fee" required>
+
+        <!-- SCHOOL YEAR -->
+        <label for="school-year">School Year</label>
+        <select id="school-year" name="school_year" required></select>
+
+        <!-- SEMESTER -->
+        <label for="semester">Semester</label>
+        <select id="semester" name="semester" required>
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+        </select>
+
+        <div class="form-buttons">
+            <button type="submit" class="btn add-btn">Add</button>
+            <button type="reset" class="btn cancel-btn">Cancel</button>
+        </div>
+    </form>
+</aside>
+
+<script>
+// ==============================
+// AUTO GENERATE SCHOOL YEAR
+// ==============================
+const sySelect = document.getElementById('school-year');
+const semSelect = document.getElementById('semester');
+
+if (sySelect) {
+    const now = new Date();
+    const month = now.getMonth() + 1; // 1–12
+    const year = now.getFullYear();
+
+    // === SCHOOL YEAR LOGIC ===
+    let startYear;
+
+    if (month >= 6) {
+        // June or later → SY = current year - next year
+        startYear = year;
+    } else {
+        // Before June → previous academic year's start
+        startYear = year - 1;
+    }
+
+    const sy1 = `${startYear}-${startYear + 1}`;
+    const sy2 = `${startYear + 1}-${startYear + 2}`;
+
+    sySelect.innerHTML = `
+        <option value="${sy1}">${sy1}</option>
+        <option value="${sy2}">${sy2}</option>
+    `;
+
+    // Auto-select current SY
+    sySelect.value = sy1;
+}
+
+// ==============================
+// ORIGINAL TABLE EDIT / UPDATE / DELETE
+// ==============================
+document.querySelectorAll('tr').forEach(row => {
+    const editBtn = row.querySelector('.edit-btn');
+    const updateBtn = row.querySelector('.update-btn');
+    const removeBtn = row.querySelector('.remove-btn');
+    const feeInput = row.querySelector('.fee-input');
+
+    if (editBtn && updateBtn && feeInput) {
+        editBtn.addEventListener('click', () => {
+            feeInput.disabled = false;
+            feeInput.focus();
+            feeInput.select();
+            updateBtn.disabled = false;
+        });
+
+        feeInput.addEventListener('click', () => feeInput.select());
+
+        updateBtn.addEventListener('click', () => {
+            const txId = feeInput.dataset.id;
+            const totalFee = feeInput.value.trim();
+
+            if (!totalFee) {
+                alert("Total fee cannot be empty");
+                return;
+            }
+
+            fetch('/transaction/update_fee', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: txId, total_fee: totalFee })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    feeInput.style.borderColor = 'var(--success)';
+                    feeInput.disabled = true;
+                    updateBtn.disabled = true;
+                    setTimeout(() => location.reload(), 300);
+                } else {
+                    alert('Failed to update fee: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
+    if (removeBtn && feeInput) {
+        removeBtn.addEventListener('click', () => {
+            const txId = feeInput.dataset.id;
+            const confirmDelete = confirm("Are you sure you want to remove this fee?");
+
+            if (!confirmDelete) return;
+
+            fetch('/transaction/remove_fee', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: txId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    row.style.backgroundColor = 'rgba(255,0,0,0.2)';
+                    setTimeout(() => row.remove(), 400);
+                } else {
+                    alert('Failed to remove fee');
+                }
+            });
+        });
+    }
+});
+</script>
+
+{% endblock %}

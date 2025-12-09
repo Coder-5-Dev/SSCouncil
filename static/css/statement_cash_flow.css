@@ -1,0 +1,527 @@
+/* -------------------- General -------------------- */
+body {
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    background-color: #1d2634;
+    color: #9e9ea4;
+    overflow-x: hidden;
+}
+
+/* -------------------- Header -------------------- */
+.header {
+    position: fixed; /* ✅ Keeps header fixed on top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* ✅ Ensures it stays above all elements */
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 70px;
+    background-color: #1d2634;
+    box-shadow: 0 6px 7px -3px rgba(0, 0, 0, 0.35);
+    animation: slideDown 0.6s ease-in-out forwards;
+}
+
+.header span.material-icons-outlined {
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.menu-icon {
+    display: none;
+}
+
+/* -------------------- Main -------------------- */
+.main-container {
+    grid-area: main;
+    overflow-y: auto;
+    padding: 90px 20px 20px; /* ⬅ added top padding (was 20px) */
+    color: rgba(255, 255, 255, 0.95);
+    animation: fadeIn 1s ease-in-out;
+}
+
+.main-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* ----------------- Cards ----------------- */
+.main-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 25px;
+    border-radius: 5px;
+    color: #fff;
+    animation: slideUp 0.7s ease-in-out forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cards:first-child { background-color: #2962ff; }
+.cards:nth-child(2) { background-color: #ff6d00; }
+.cards:nth-child(3) { background-color: #2e7d32; }
+.cards:nth-child(4) { background-color: #d50000; }
+
+.cards:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+/* ----------------- Card Inner ----------------- */
+.card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-inner > .material-icons-outlined {
+    font-size: 45px;
+    animation: floatIcon 2.5s infinite ease-in-out;
+}
+
+/* Underlined “Net Cash” section */
+.card-inner.total {
+    border-top: 2px solid #5eead4;
+    margin-top: 10px;
+    padding-top: 15px;
+    font-weight: 600;
+    background: rgba(20, 32, 51, 0.4);
+    border-radius: 8px;
+}
+
+.card-inner.total h3 {
+    color: #5eead4;
+}
+
+.card-inner.total span {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* ----------------- Charts ----------------- */
+.charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.charts-cards {
+    background-color: #263043;
+    margin-bottom: 25px;
+    padding: 25px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    box-shadow: 0 6px 7px -4px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.8s ease-in-out forwards;
+}
+
+.chart-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* -------------------- Animations -------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatIcon {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* -------------------- Date Selection Section -------------------- */
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .date-selection {
+        display: block;
+        width: 90%;
+        margin: 15px auto;
+    }
+
+    .date-selection label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .date-selection input {
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    .date-selection span {
+        display: none;
+    }
+}
+
+/* ---------- MEDIA QUERIES ---------- */
+@media screen and (max-width: 992px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 0.2fr 3fr;
+    grid-template-areas:
+      'header'
+      'main';
+  }
+
+  #sidebar {
+    display: none;
+  }
+
+  .menu-icon {
+    display: inline;
+  }
+
+  .sidebar-title > span {
+    display: inline;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .main-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 0;
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .header-left {
+    display: none;
+  }
+}
+
+/* ---------- Summary Report Table ---------- */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 15px;
+    color: #f0f0f0;
+    background-color: #1e2738;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.report-table thead {
+    background-color: #263043;
+}
+
+.report-table th {
+    padding: 14px;
+    text-align: center;
+    font-weight: 600;
+    color: #9e9ea4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.report-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/* Alternate row shading */
+.report-table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover effect */
+.report-table tbody tr:hover {
+    background-color: rgba(41, 98, 255, 0.2);
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+/* Profit column highlight */
+.report-table td:last-child {
+    font-weight: bold;
+    color: #2e7d32;  /* green for positive */
+}
+
+/* Expenses look red */
+.report-table td:nth-child(3) {
+    color: #d50000;
+}
+
+/* Responsive table */
+@media screen and (max-width: 768px) {
+    .report-table {
+        font-size: 13px;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 8px;
+    }
+}
+
+/* ----------------- Realtime Field (Dark Theme Match) ----------------- */
+.date-selection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    background-color: #263043;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    max-width: 100%;
+}
+
+.date-selection label {
+    color: #f5f5f5;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.date-selection input[type="date"],
+.date-selection input[readonly] {
+    background-color: #1d2634;
+    color: #f5f5f5;
+    border: 1px solid #3e4a63;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.date-selection input[type="date"]:hover,
+.date-selection input[readonly]:hover {
+    border-color: #5a6fcf;
+}
+
+.date-selection input[type="date"]:focus {
+    outline: none;
+    border-color: #7289da;
+    background-color: #212b40;
+}
+
+.date-selection input[readonly] {
+    cursor: default;
+    opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+    .date-selection {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* -------------------- Financial Notes Section -------------------- */
+.financial-notes {
+    display: flex;
+    flex-direction: column;
+    background-color: #263043;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 6px 10px -3px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.8s ease-in-out forwards;
+}
+
+.financial-notes h2 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.financial-notes h3 {
+    color: #4cafef;
+    font-size: 1.2rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #4cafef;
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+/* -------- Table Styling -------- */
+.financial-notes table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1d2634;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.financial-notes td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #d1d1d1;
+    font-size: 0.95rem;
+}
+
+.financial-notes td:first-child {
+    text-align: left;
+}
+
+.financial-notes td:last-child {
+    text-align: right;
+}
+
+/* Total rows */
+.financial-notes tr:last-child td {
+    font-weight: bold;
+    color: #ffffff;
+    border-top: 2px solid #4cafef;
+}
+
+/* Form container */
+#addItemForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+/* Inputs */
+#addItemForm input[type="text"],
+#addItemForm input[type="number"] {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Button */
+#addItemForm button {
+    padding: 8px 16px;
+    background-color: #1d2634;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#addItemForm button:hover {
+    background-color: #37475a;
+}
+
+
+/* Form container */
+#saveItemForm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: right;
+}
+
+/* Inputs */
+#saveItemForm input[type="text"],
+#saveItemForm input[type="number"] {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Button */
+#saveItemForm button {
+    padding: 8px 16px;
+    background-color: #1d2634;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#saveItemForm button:hover {
+    background-color: #37475a;
+}
+
+/* ---------- NET CASH TOTAL (MATCHES TOTAL ROW STYLE) ---------- */
+.net-cash-total {
+  background-color: #1f2a40; /* Matches total row panel */
+  color: #ffffff;
+  border-top: 2px solid #29b6f6; /* Same accent as the blue line */
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 15px 20px;
+  text-align: right;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+.net-cash-total span.label {
+  float: left;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.net-cash-total span.amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #4ade80; /* Green for positive net cash */
+}
+
+/* Negative state (optional) */
+.net-cash-total.negative span.amount {
+  color: #f87171;
+}

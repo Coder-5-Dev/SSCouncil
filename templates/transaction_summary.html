@@ -1,0 +1,120 @@
+{% extends "Finance_breakdown.html" %}
+
+{% block title %}Financial Summary - SSC Financial Management{% endblock %}
+
+{% block content %}
+
+<style>
+/* View Edit History Button */
+.history-btn {
+    background: #4d85ff;
+    color: white;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.history-btn:hover {
+    background: #2b62d4;
+</style>
+
+<div class="report-wrapper">
+
+  <!-- Header -->
+  <div class="report-header">
+    <div class="header-icon"><i class="fa-solid fa-chart-simple"></i></div>
+    <div class="header-text">
+      <h1>{{ display_label|default('Financial Summary') }}</h1>
+      <p>Financial Overview</p>
+    </div>
+  </div>
+
+  <!-- Dashboard Totals -->
+  <div class="dashboard-totals">
+    <div class="total-card inflow">
+      <h3>Total Inflows</h3>
+      <p id="total-inflows">₱{{ total_inflows|float|round(2) }}</p>
+    </div>
+    <div class="total-card outflow">
+      <h3>Total Outflows</h3>
+      <p id="total-outflows">₱{{ total_outflows|float|round(2) }}</p>
+    </div>
+    <div class="total-card net">
+      <h3>Net Balance</h3>
+      <p id="net-balance">₱{{ net_balance|float|round(2) }}</p>
+    </div>
+  </div>
+
+  <!-- Inflows Cards -->
+  <h2>CASH INFLOWS</h2>
+  <div class="showcase-container" id="received-inflows-container">
+    {% if received_inflows %}
+      {% for t in received_inflows %}
+      <div class="showcase-card inflow" style="border:1px solid #ccc; padding:10px; margin:5px; border-radius:6px;">
+        <h3>{{ t.description }}</h3>
+        <p>Students: <strong>{{ t.quantity }}</strong></p>
+        <p>Fee: <strong>₱{{ t.fee|float|round(2) }}</strong></p>
+        <p>Total: <strong class="amount">₱{{ t.total_amount|float|round(2) }}</strong></p>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:#95a5a6;">No inflows found</p>
+    {% endif %}
+  </div>
+
+  <!-- Outflows Table -->
+  <h2>CASH OUTFLOWS</h2>
+  {% if payment_details %}
+  <table class="payments-table">
+      <thead>
+          <tr>
+              <th>Category</th>
+              <th>Description</th>
+              <th>SI / OR No.</th>
+              <th>Total (₱)</th>
+              <th>Expense Date</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for p in payment_details %}
+          <tr>
+              <td>{{ p.category }}</td>
+              <td>{{ p.description }}</td>
+              <td>{{ p.si_or_no }}</td>
+              <td class="amount">{{ p.amount|float|round(2) }}</td>
+              <td>{{ p.expense_date }}</td>
+              <td>
+                <a href="/expense_history/{{ p.id }}" class="history-btn">View Edit History</a>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+  {% else %}
+  <p style="color:#95a5a6;">No outflows found</p>
+  {% endif %}
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  function formatCurrency(num) {
+    return '₱' + Math.abs(parseFloat(num)).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  let inflows = 0, outflows = 0;
+
+  document.querySelectorAll('#received-inflows-container .showcase-card .amount')
+          .forEach(el => inflows += parseFloat(el.textContent.replace(/₱|,|\s/g,'')) || 0);
+
+  document.querySelectorAll('.payments-table tbody tr .amount')
+          .forEach(el => outflows += parseFloat(el.textContent.replace(/₱|,|\s/g,'')) || 0);
+
+  document.getElementById('total-inflows').textContent = formatCurrency(inflows);
+  document.getElementById('total-outflows').textContent = formatCurrency(outflows);
+  document.getElementById('net-balance').textContent = formatCurrency(Math.abs(inflows - outflows));
+});
+</script>
+
+{% endblock %}

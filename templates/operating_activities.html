@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SSC Financial Management{% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='pics/SSC4.ico') }}">
+
+  <!-- Montserrat Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <!-- Material Icons-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/operating_activities.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+</head>
+<body>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <span class="material-icons-outlined" id="menuToggle">menu</span>
+        
+    </header>
+    <!-- End Header -->
+
+    <!-- Sidebar -->
+        {% include "treasurer_nav.html" %}
+    <!-- End Sidebar -->
+
+    <!-- Main Content -->
+    <main class="main-container">
+        {% block content %} {% endblock %}
+    </main>
+    <!-- End Main -->
+
+  <!-- Optional JS to change hint dynamically -->
+  <script src="{{ url_for('static', filename='js/.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/sidebar.js')}}"></script>
+</body>
+</html>

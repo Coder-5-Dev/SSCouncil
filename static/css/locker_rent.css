@@ -1,0 +1,324 @@
+:root {
+  --bg: #0f1724;
+  --card: #111827;
+  --accent: #5eead4;
+  --muted: #9aa4b2;
+  --success: #16a34a;
+  --danger: #ef4444;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* ===================== Header Section ===================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 65px;
+  background: var(--header-bg);
+  color: var(--text);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.header-user .material-icons-outlined {
+  font-size: 28px;
+  color: var(--text);
+}
+
+/* Global */
+body {
+  background: var(--bg);
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container */
+.container {
+  max-width: 100%;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Header */
+.hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Locker Form */
+.locker-form.card {
+  background: var(--card);
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Form Layout */
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+.form-grid.two-columns {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.input, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #fff;
+}
+label {
+  font-size: 14px;
+  color: var(--muted);
+}
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Make buttons auto-width so they can center */
+.btn-submit,
+.btn-cancel {
+  background: var(--accent);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  width: auto;
+  width: 100%;
+  min-width: 150px;
+}
+
+.btn-cancel {
+  background: #374151;
+  color: #fff;
+}
+
+/* Locker Grid */
+.locker-grid {
+  display: flex;
+  flex-wrap: nowrap; /* Horizontal row */
+  gap: 10px;
+  margin-top: 10px;
+  overflow-x: auto; /* Allow horizontal scroll if overflow */
+  padding-bottom: 5px;
+}
+.locker-grid::-webkit-scrollbar {
+  height: 6px;
+}
+.locker-grid::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+.locker-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.locker {
+  flex: 0 0 80px; /* Fixed width for horizontal alignment */
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  color: #fff;
+}
+.locker.available { background: var(--success); }
+.locker.occupied { background: var(--danger); }
+
+.legend {
+  margin-top: 10px;
+  color: var(--muted);
+}
+.legend-box {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.legend-box.available { background: var(--success); }
+.legend-box.occupied { background: var(--danger); }
+
+/* Rentals Section */
+.rentals-section {
+  margin-top: 25px;
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+/* Table */
+.locker-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left; /* Default text alignment for all cells */
+}
+.locker-table th {
+  background: #1e293b;
+  padding: 12px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: left; /* Align headers left */
+}
+.locker-table td {
+  padding: 10px;
+  border-bottom: 1px solid #334155;
+  font-size: 14px;
+  text-align: left; /* Align cell text left */
+}
+.status.active { color: var(--success); font-weight: bold; }
+.status.released { color: var(--danger); font-weight: bold; }
+.btn-renew, .btn-release {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-renew { background: #10b981; color: #fff; }
+.btn-release { background: #ef4444; color: #fff; }
+.btn-renew:hover, .btn-release:hover { opacity: 0.85; }
+
+/* ===== Hide Scrollbar (All Browsers) ===== */
+html, body {
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Two Column Layout */
+.two-column-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+@media (max-width: 900px) {
+  .two-column-layout {
+    flex-direction: column;
+  }
+}
+
+/* Locker Rows Grouped by Letter */
+.locker-grid.letter-row {
+  display: flex;
+  flex-wrap: nowrap; /* Horizontal row */
+  gap: 10px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+.locker-grid.letter-row::-webkit-scrollbar {
+  height: 6px;
+}
+.locker-grid.letter-row::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+.locker-grid.letter-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.locker-grid-container::-webkit-scrollbar {
+  display: none;
+}
+.locker-grid-container {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.btn-export {
+  background: #2563eb;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-export:hover {
+  background: #1e4fad;
+}
+
+/* Style for View / Manage button */
+.btn-manage {
+  display: inline-block;
+  padding: 6px 12px;           /* Button padding */
+  background-color: #007bff;   /* Blue background */
+  color: #fff;                 /* White text */
+  text-decoration: none;       /* Remove underline */
+  border-radius: 4px;           /* Rounded corners */
+  font-size: 14px;             /* Adjust font size */
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-manage:hover {
+  background-color: #0056b3;   /* Darker blue on hover */
+  transform: translateY(-1px); /* Slight lift effect */
+}
+
+.btn-manage:active {
+  background-color: #004080;   /* Even darker on click */
+  transform: translateY(0);    /* Reset lift */
+}
+
+/* Base for both action buttons */
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
+
+/* Renew button */
+.btn-renew {
+    background: #10b981;
+    color: #fff;
+}
+.btn-renew:hover {
+    background: #0f9d5b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+}
+
+/* Released button */
+.btn-release {
+    background: #ef4444;
+    color: #fff;
+}
+.btn-release:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.35);
+}
+
+/* Click effect */
+.action-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
